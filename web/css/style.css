@@ -1,0 +1,202 @@
+/* ToneSync M1 —— 深色 UI，视觉规范与交互原型一致 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  background: #0D0D0F; color: #EDEDF0;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-size: 13px;
+}
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+.spacer { flex: 1; }
+
+#app { height: 100vh; display: flex; flex-direction: column; }
+
+/* ---- 顶栏 ---- */
+#topbar { height: 52px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0 20px; border-bottom: 1px solid #1A1A1E; }
+#home { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 4px 6px; margin-left: -6px; border-radius: 8px; }
+#home:hover { background: #17171B; }
+.logo { width: 22px; height: 22px; border-radius: 7px; background: linear-gradient(135deg, #8A7CFF, #5240C9); }
+.brand { font-size: 14px; font-weight: 600; letter-spacing: .5px; }
+.brand-sub { font-size: 12px; color: #6C6C76; }
+.local-badge { font-size: 11px; color: #55555E; display: flex; align-items: center; gap: 6px; }
+.local-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #4CBF8C; }
+
+#main { flex: 1; display: flex; min-height: 0; }
+#center { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
+
+/* ---- 空状态 ---- */
+#empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; animation: fadeUp .4s ease; }
+.empty-logo { width: 52px; height: 52px; border-radius: 15px; background: linear-gradient(135deg, #8A7CFF, #5240C9); box-shadow: 0 8px 40px rgba(107,92,231,.35); }
+.empty-title { font-size: 22px; font-weight: 600; letter-spacing: 1px; }
+.empty-sub { font-size: 13px; color: #6C6C76; text-align: center; line-height: 1.7; }
+.empty-actions { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 12px; }
+.empty-btn-row { display: flex; gap: 10px; }
+.pill { display: flex; align-items: center; gap: 8px; padding: 9px 20px; border-radius: 99px; background: #1A1A1E; border: 1px solid #2A2A30; font-size: 13px; transition: all .15s; }
+.pill:hover { border-color: #6B5CE7; background: #1E1B2E; }
+.link-btn { font-size: 12px; color: #55555E; }
+.link-btn:hover { color: #8A7CFF; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* ---- 画布区 ---- */
+#stage { flex: 1; position: relative; min-height: 0; }
+#glcanvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+#view-toggle {
+  position: absolute; top: 12px; right: 14px; z-index: 5;
+  width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center;
+  background: rgba(20,20,23,.85); border: 1px solid #2A2A30; color: #B8B8C2; backdrop-filter: blur(4px);
+}
+#view-toggle:hover { border-color: #55555E; color: #fff; }   /* 图标按钮 hover 高亮，不用紫色 */
+
+/* 单图模式左右边界线标 */
+.edge-nav { position: absolute; top: 0; bottom: 118px; width: 13%; z-index: 4; display: flex; align-items: center; cursor: pointer; opacity: 0; transition: opacity .15s; }
+.edge-nav:hover { opacity: 1; }
+#nav-prev { left: 0; justify-content: flex-start; }
+#nav-next { right: 0; justify-content: flex-end; }
+.edge-line { position: absolute; top: 15%; bottom: 15%; width: 2px; background: rgba(255,255,255,.75); }
+#nav-prev .edge-line { left: 10px; } #nav-next .edge-line { right: 10px; }
+.edge-chev { font-size: 30px; color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.8); padding: 0 22px; user-select: none; }
+.edge-nav.disabled { display: none; }
+
+#img-name { position: absolute; z-index: 3; font-size: 11px; color: #E6E6EB; text-shadow: 0 1px 3px rgba(0,0,0,.9); pointer-events: none; max-width: 40%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 分屏对比 */
+#split-bar { position: absolute; width: 2px; margin-left: -1px; background: rgba(255,255,255,.85); cursor: ew-resize; z-index: 4; }
+.split-handle { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 30px; height: 30px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #111; box-shadow: 0 2px 10px rgba(0,0,0,.5); user-select: none; }
+.cmp-label { position: absolute; z-index: 3; padding: 3px 9px; border-radius: 6px; font-size: 11px; pointer-events: none; }
+#cmp-l { background: rgba(0,0,0,.55); color: #CFCFD6; }
+#cmp-r { background: rgba(107,92,231,.85); color: #fff; }
+
+/* 素材悬停删除（评审⑩） */
+#thumb-del { position: absolute; z-index: 6; width: 20px; height: 20px; border-radius: 50%; background: rgba(0,0,0,.65); color: #CFCFD6; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+#thumb-del:hover { background: rgba(0,0,0,.9); color: #fff; }
+
+/* 开关 */
+.switch { width: 34px; height: 19px; border-radius: 99px; background: #2A2A30; position: relative; cursor: pointer; transition: background .15s; }
+.switch.on { background: #6B5CE7; }
+.switch .knob { position: absolute; top: 2px; left: 2px; width: 15px; height: 15px; border-radius: 50%; background: #fff; transition: left .15s; }
+.switch.on .knob { left: 17px; }
+#cmp-sec.dim { opacity: .35; pointer-events: none; }
+#counter { position: absolute; right: 16px; bottom: 12px; z-index: 3; font-size: 12px; color: #55555E; font-variant-numeric: tabular-nums; pointer-events: none; }
+
+/* ---- 右侧面板 ---- */
+#panel { position: relative; width: 300px; flex: none; background: #141417; border-left: 1px solid #1E1E23; display: flex; flex-direction: column; min-height: 0; animation: fadeUp .2s ease; }
+/* 面板左缘拖动调宽（v1.1③）：只用 col-resize 光标提示，不显示紫色条（v1.1 优化） */
+#panel-resize { position: absolute; left: -3px; top: 0; width: 7px; height: 100%; cursor: col-resize; z-index: 6; }
+.panel-head { flex: none; display: flex; align-items: center; padding: 14px 16px 10px; gap: 8px; }
+.panel-title { font-size: 13px; font-weight: 600; }
+.ghost-btn { font-size: 11px; color: #6C6C76; padding: 3px 8px; border-radius: 6px; display: flex; align-items: center; }
+.ghost-btn:hover { background: #1E1E23; color: #EDEDF0; }
+.panel-body { flex: 1; overflow-y: auto; padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 18px; }
+section { display: flex; flex-direction: column; gap: 8px; }
+.sec-label { font-size: 11px; color: #6C6C76; letter-spacing: 1px; }
+.row { display: flex; align-items: baseline; }
+
+/* 参考图 / 导入 .cube 合并单模块（v0.11）：定高，空态/有图态/含名称条尺寸不变（BUG-010）
+   高度对齐原型：预览 96px + 间距 8 + 色板 14 = 118px（ToneSync-standalone.html 同款） */
+#tone-box { height: 118px; display: flex; flex-direction: column; gap: 8px; }
+#ref-add { flex: 1; min-height: 0; border: 1px dashed #2E2E36; border-radius: 10px; padding: 8px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: border-color .15s; }
+/* 空态不常亮紫，鼠标移入模块才变紫（优化 v1.0②，取代原脉冲引导） */
+#ref-add:hover { border-color: #6B5CE7; }
+.ref-hint { font-size: 12px; color: #9A9AA4; }
+.ref-sub { font-size: 11px; color: #55555E; text-align: center; line-height: 1.5; }
+
+/* 参考图大预览（原型样式：大图 + ‹› 切换 + 下方色板条，v0.11） */
+#ref-count { color: #55555E; }
+#ref-view { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+/* 无选中态紫框；hover 微放大 + 提亮（newwow 式，优化 v1.0①） */
+#ref-main { position: relative; flex: 1; min-height: 0; border-radius: 10px; overflow: hidden; background: #191920; cursor: pointer; transition: transform .18s ease, filter .18s ease; }
+#ref-main:hover { transform: scale(1.03); filter: brightness(1.08); z-index: 2; }
+#ref-big { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ref-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 24px; height: 40px; border-radius: 7px; background: rgba(0,0,0,.38); color: #EDEDF0; font-size: 17px; opacity: 0; transition: opacity .15s; }
+#ref-main:hover .ref-nav { opacity: 1; }
+.ref-nav:hover { background: rgba(0,0,0,.72); }
+.ref-nav.disabled { opacity: 0 !important; pointer-events: none; }
+#ref-prev { left: 6px; }
+#ref-next { right: 6px; }
+#ref-del, #ref-append { position: absolute; top: 6px; width: 20px; height: 20px; border-radius: 50%; background: rgba(0,0,0,.5); color: #CFCFD6; font-size: 11px; opacity: 0; transition: opacity .15s; }
+#ref-del { right: 6px; }
+#ref-append { right: 32px; font-size: 13px; }
+#ref-main:hover #ref-del, #ref-main:hover #ref-append { opacity: 1; }
+#ref-del:hover, #ref-append:hover { background: rgba(0,0,0,.9); color: #fff; }
+/* 色板条（原型：参考图主色一排色块，跟随 ‹› 切换） */
+#ref-palette { flex: none; display: flex; gap: 5px; height: 14px; }
+#ref-palette div { flex: 1; border-radius: 4px; }
+/* 名称条在定高模块内压扁一档，尽量给预览留高度 */
+#cube-chip { flex: none; padding: 3px 8px; }
+#cube-chip .chip { width: 33px; height: 20px; }
+
+/* 分类页签与垫图卡片（v0.9） */
+#cube-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
+#cube-tabs button { flex: 1; height: 26px; border-radius: 7px; font-size: 11px; color: #8E8E98; }
+#cube-tabs button:hover { background: #1E1E23; color: #EDEDF0; }
+#cube-tabs button.on { background: #1E1E23; color: #EDEDF0; }   /* 激活态不用紫（v0.5 规范） */
+/* 卡片网格随面板宽度自适应列数（v1.1③）：默认 3 列稍大，拖宽自动 4/5 列，行高一致 */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(82px, 1fr)); gap: 8px; }
+/* 卡片无选中态紫框；hover 微放大 + 提亮（newwow 式，优化 v1.0①） */
+.lut-card { position: relative; border-radius: 9px; overflow: hidden; cursor: pointer; background: #191920; transition: transform .18s ease, filter .18s ease; }
+.lut-card:hover { transform: scale(1.045); filter: brightness(1.12); z-index: 2; }
+.lut-card .thumb { aspect-ratio: 16 / 9.2; background-size: cover; background-position: center; }
+.lut-card .cname { padding: 4px 6px; font-size: 10px; color: #B8B8C2; text-align: center; background: #17171B; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tab-empty { font-size: 11px; color: #55555E; text-align: center; padding: 16px 0; }
+/* 每个 tab 最多 2 行（4×2），超过滚动（优化 v1.0③）；内边距给 hover 放大留空间 */
+#tab-common, #tab-builtin, #tab-fav, #tab-recent { max-height: 164px; overflow-y: auto; padding: 4px; margin: -4px; }   /* 2 行卡片高（默认卡 74px×2 + 行距 + 内边距），超过滚动（v1.0③；v1.1 卡片增大后调高） */
+/* 卡片悬停 ✕ 删除（收藏卡片，休止态隐藏，不改变外观） */
+.card-del { position: absolute; top: 3px; right: 3px; width: 17px; height: 17px; border-radius: 50%; background: rgba(0,0,0,.55); color: #E8E8EC; font-size: 10px; opacity: 0; transition: opacity .15s; z-index: 3; }
+.lut-card:hover .card-del { opacity: 1; }
+.card-del:hover { background: rgba(0,0,0,.9); color: #fff; }
+
+.outline-btn { height: 34px; border-radius: 10px; border: 1px solid #2A2A30; font-size: 12px; color: #CFCFD6; transition: all .15s; width: 100%; }
+.outline-btn:hover { border-color: #55555E; color: #fff; }
+.outline-btn:disabled { opacity: .35; cursor: default; }
+.outline-btn:disabled:hover { border-color: #2A2A30; color: #CFCFD6; }
+#export-sec { display: flex; flex-direction: column; gap: 8px; }
+
+/* 导入名称条 + 色调历史列表（v0.10） */
+#hist-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+/* 无选中态紫框；hover 微放大 + 提亮（newwow 式，优化 v1.0①） */
+.cube-item { position: relative; display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; background: #191920; cursor: pointer; transition: transform .18s ease, filter .18s ease; }
+.cube-item:hover { transform: scale(1.03); filter: brightness(1.15); z-index: 2; }
+.cube-item .time { flex: none; font-size: 10px; color: #55555E; font-variant-numeric: tabular-nums; }
+.cube-item .chip { width: 40px; height: 24px; border-radius: 5px; flex: none; background-size: cover; }
+.cube-item .name { flex: 1; min-width: 0; font-size: 11px; color: #CFCFD6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cube-item .del { flex: none; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,.5); color: #CFCFD6; font-size: 10px; }
+.cube-item .del:hover { background: rgba(0,0,0,.9); color: #fff; }
+.primary-btn { height: 34px; border-radius: 10px; background: linear-gradient(135deg, #7B6CF5, #5B4BD5); font-size: 12px; font-weight: 600; color: #fff; transition: filter .15s; }
+.primary-btn:hover { filter: brightness(1.12); }
+.primary-btn:disabled { filter: grayscale(.7) brightness(.7); cursor: default; }
+
+/* 轻提示 */
+#toast { position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%); z-index: 30; background: #1A1A1E; border: 1px solid #2A2A30; color: #EDEDF0; font-size: 12px; padding: 8px 16px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,.5); }
+
+#presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(82px, 1fr)); gap: 8px; }
+.preset { display: flex; flex-direction: column; gap: 4px; cursor: pointer; }
+.preset .chip { height: 40px; border-radius: 8px; outline: 2px solid transparent; outline-offset: 2px; background-size: cover; }
+.preset.active .chip { outline-color: #6B5CE7; }
+.preset .name { font-size: 10px; color: #8E8E98; text-align: center; }
+
+#strength-sec { transition: opacity .2s; }
+#strength-sec.dim { opacity: .35; }
+#strength-val { font-size: 12px; font-variant-numeric: tabular-nums; }
+input[type=range] { -webkit-appearance: none; appearance: none; background: transparent; width: 100%; height: 20px; cursor: pointer; }
+/* 滑杆轨道统一灰色（同系统滚动条灰，2026-07-18 评审③）；今后所有新增滑杆沿用；滑块保持白色，不用紫色 */
+input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: #55555E; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #fff; margin-top: -6px; box-shadow: 0 1px 5px rgba(0,0,0,.6); }
+.range-ends { display: flex; justify-content: space-between; font-size: 10px; color: #55555E; }
+
+.divider { height: 1px; background: #1E1E23; }
+.m2-note { font-size: 11px; color: #3E3E46; text-align: center; padding: 4px; }
+
+/* ---- 图标窄栏 ---- */
+#rail { width: 52px; flex: none; background: #111114; border-left: 1px solid #1E1E23; display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 6px; }
+#rail button { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #8E8E98; }
+#rail button:hover { background: #1E1E23; color: #EDEDF0; }
+#rail button.on { background: #1E1E23; color: #B8B8C2; }   /* 激活态不用紫色描边（评审⑥⑦） */
+.rail-div { width: 20px; height: 1px; background: #1E1E23; margin: 4px 0; }
+
+/* ---- 全屏拖放 ---- */
+#dropzone { position: fixed; inset: 10px; border: 2px dashed #6B5CE7; border-radius: 16px; background: rgba(107,92,231,.08); display: flex; align-items: center; justify-content: center; font-size: 15px; color: #A89CFF; z-index: 20; pointer-events: none; }
+
+#glcanvas.wall { cursor: default; }
+#glcanvas.strip-hover { cursor: pointer; }

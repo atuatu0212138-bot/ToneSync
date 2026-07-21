@@ -1,0 +1,11 @@
+[
+  { "file": "lut_01.cube", "name": "Apple Log→Rec709 Fix" },
+  { "file": "lut_02.cube", "name": "Apple Log→Rec709" },
+  { "file": "lut_03.cube", "name": "赐福司影调 01" },
+  { "file": "lut_04.cube", "name": "赐福司影调 02" },
+  { "file": "lut_05.cube", "name": "青青风格化 1" },
+  { "file": "lut_06.cube", "name": "青青风格化 2" },
+  { "file": "lut_07.cube", "name": "青青风格化 3" },
+  { "file": "lut_08.cube", "name": "iPhone 还原" },
+  { "file": "lut_09.cube", "name": "iPhone 青青风格化" }
+]

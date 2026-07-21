@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Node（回归测试依赖）
+node_modules/
+web/test/out/
+
+# Python（m0 算法验证）
+.venv/
+__pycache__/
+*.pyc
+
+# m0 验证素材（第三方/真实照片，213MB，仅算法验证脚手架，不随开源发布）
+m0/real_input/
+m0/output/compare_*.jpg
+m0/output/contact_sheet.jpg
+m0/output/merge_compare/
+# 保留：m0/*.py、m0/README.md、m0/output/report.md（结论）、m0/output/*.cube、m0/demo_*（合成示例）
